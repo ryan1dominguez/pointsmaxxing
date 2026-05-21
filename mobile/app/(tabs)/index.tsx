@@ -8,7 +8,7 @@ export default function HomeScreen() {
 
   const handleRecommend = async () => {
     setLoading(true)
-    const response = await fetch('http://192.168.1.73:3000/api/recommend', {
+    const response = await fetch('https://pointsmaxxing.vercel.app/api/recommend', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ purchase_description: purchase })

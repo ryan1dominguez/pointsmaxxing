@@ -55,6 +55,9 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ 
-        message: `We are categorizing this purchase as ${category}. The best credit card to use would be ${data[0].credit_cards.name} which will give you ${data[0].reward_percentage}% back`
+        message: `We are categorizing this purchase as ${category}. The best credit card to use would be ${data[0].credit_cards.name} which will give you ${data[0].reward_percentage}% back`,
+        card: data[0].credit_cards.name,
+        cateory: category,
+        percentage: data[0].reward_percentage
     })
 }
