@@ -1,16 +1,46 @@
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { supabase } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
+import { Redis } from '@upstash/redis'
+import { Ratelimit } from '@upstash/ratelimit'
+
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY
+})
+
+const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+}) 
+
+const ratelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '1 m'),
+    analytics: true,
+})
 
 export async function POST(request: Request) {
-    const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
-    const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
-    })
+    const ip = request.headers.get('x-forwarded-for') ?? 'anonymous'
+    const { success, limit, remaining } = await ratelimit.limit(ip)
+
+    if (!success) {
+        return NextResponse.json(
+        { message: 'Too many requests. Please slow down.' },
+        { 
+            status: 429,
+            headers: {
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+            }
+        }
+        )
+    }
+    
     const body = await request.json()
     const { purchase_description } = body
 
@@ -57,7 +87,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
         message: `We are categorizing this purchase as ${category}. The best credit card to use would be ${data[0].credit_cards.name} which will give you ${data[0].reward_percentage}% back`,
         card: data[0].credit_cards.name,
-        cateory: category,
+        category: category,
         percentage: data[0].reward_percentage
     })
 }
