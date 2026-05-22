@@ -25,10 +25,17 @@ interface Card {
   rewards: Reward[]
 }
 
+interface Result {
+  message: string
+  card: string
+  category: string
+  percentage: number
+}
+
 export default function Dashboard() {
   const router = useRouter()
   const [purchase, setPurchase] = useState('')
-  const [result, setResult] = useState<{ message: string; card: string; category: string; percentage: number } | null>(null)
+  const [result, setResult] = useState<Result | null>(null)
   const [loading, setLoading] = useState(false)
   const [cards, setCards] = useState<Card[]>([])
   const [userName, setUserName] = useState('')
@@ -88,238 +95,87 @@ export default function Dashboard() {
   }
 
   return (
-    <main style={{
-      minHeight: '100vh',
-      background: '#080C14',
-      fontFamily: "'Sora', sans-serif",
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
-        .pm-input:focus { border-color: rgba(55,138,221,0.5) !important; outline: none; }
-        .pm-input::placeholder { color: rgba(255,255,255,0.25); }
-        .pm-submit:hover { background: #185FA5 !important; }
-      `}</style>
+    <main className="min-h-screen bg-[#080C14] font-['Sora'] relative overflow-hidden">
+      <div className="pm-grid fixed inset-0 pointer-events-none" />
 
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundImage: 'linear-gradient(rgba(55,138,221,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(55,138,221,0.04) 1px, transparent 1px)',
-        backgroundSize: '40px 40px',
-        pointerEvents: 'none'
-      }} />
-
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '1.25rem 1.5rem',
-        borderBottom: '0.5px solid rgba(55,138,221,0.1)',
-        position: 'relative',
-        zIndex: 2
-      }}>
-        <div style={{ fontSize: '18px', fontWeight: 600, color: '#fff', letterSpacing: '-0.02em' }}>
-          Points<span style={{ color: '#378ADD' }}>Maxxing</span>
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-5 border-b border-[rgba(55,138,221,0.1)] relative z-10">
+        <div className="text-[18px] font-semibold text-white tracking-[-0.02em]">
+          Points<span className="text-[#378ADD]">Maxx</span>
         </div>
-        <div style={{
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
-          background: 'rgba(55,138,221,0.15)',
-          border: '0.5px solid rgba(55,138,221,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '11px',
-          fontWeight: 600,
-          color: '#378ADD',
-          fontFamily: "'Space Mono', monospace"
-        }}>
+        <div className="w-8 h-8 rounded-full bg-[rgba(55,138,221,0.15)] border border-[rgba(55,138,221,0.3)] flex items-center justify-center text-[11px] font-semibold text-[#378ADD] font-['Space_Mono']">
           {getInitials(userName)}
         </div>
       </div>
 
-      <div style={{
-        padding: '2rem 1.5rem',
-        position: 'relative',
-        zIndex: 2,
-        maxWidth: '480px',
-        margin: '0 auto'
-      }}>
-        <div style={{
-          fontSize: '13px',
-          color: 'rgba(255,255,255,0.35)',
-          marginBottom: '0.25rem',
-          fontFamily: "'Space Mono', monospace",
-          letterSpacing: '0.05em'
-        }}>
+      {/* Body */}
+      <div className="px-6 py-8 relative z-10 max-w-120 mx-auto">
+        <div className="text-[13px] text-white/35 mb-1 font-['Space_Mono'] tracking-wider">
           // {getGreeting()}
         </div>
-        <div style={{
-          fontSize: '24px',
-          fontWeight: 600,
-          color: '#fff',
-          letterSpacing: '-0.02em',
-          marginBottom: '2rem',
-          lineHeight: 1.2
-        }}>
-          Which card should<br />you <span style={{ color: '#378ADD' }}>swipe?</span>
+        <div className="text-[24px] font-semibold text-white tracking-[-0.02em] mb-8 leading-[1.2]">
+          Which card should<br />you <span className="text-[#378ADD]">swipe?</span>
         </div>
 
-        <div style={{ position: 'relative', marginBottom: '1rem' }}>
-          <span style={{
-            position: 'absolute',
-            left: '16px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            color: 'rgba(255,255,255,0.25)',
-            fontSize: '18px',
-            pointerEvents: 'none'
-          }}>🔍</span>
+        {/* Search */}
+        <div className="relative mb-4">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25 text-lg pointer-events-none">🔍</span>
           <input
-            className="pm-input"
+            className="w-full bg-[#0D1420] border border-[rgba(55,138,221,0.2)] rounded-[14px] py-4.5 pl-11.5 pr-15t-['Sora'] text-[15px] text-white box-border transition-colors duration-200 focus:outline-none focus:border-[rgba(55,138,221,0.5)] placeholder:text-white/25"
             placeholder="Cheesecake Factory, Chevron, Amazon..."
             value={purchase}
             onChange={(e) => setPurchase(e.target.value)}
             onKeyDown={handleKeyDown}
-            style={{
-              width: '100%',
-              background: '#0D1420',
-              border: '0.5px solid rgba(55,138,221,0.2)',
-              borderRadius: '14px',
-              padding: '18px 60px 18px 46px',
-              fontFamily: "'Sora', sans-serif",
-              fontSize: '15px',
-              color: '#fff',
-              boxSizing: 'border-box',
-              transition: 'border-color 0.2s'
-            }}
           />
           <button
-            className="pm-submit"
             onClick={handleRecommend}
-            style={{
-              position: 'absolute',
-              right: '8px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: '#378ADD',
-              border: 'none',
-              borderRadius: '10px',
-              width: '40px',
-              height: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#fff',
-              fontSize: '18px',
-              transition: 'background 0.2s'
-            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#378ADD] hover:bg-[#185FA5] border-none rounded-[10px] w-10 h-10 flex items-center justify-center cursor-pointer text-white text-lg transition-colors duration-200"
           >
             {loading ? '...' : '→'}
           </button>
         </div>
 
+        {/* Result */}
         {result && (
-          <div style={{
-            background: '#0D1420',
-            border: '0.5px solid rgba(55,138,221,0.3)',
-            borderRadius: '16px',
-            padding: '1.25rem',
-            marginBottom: '1.5rem'
-          }}>
-            <div style={{
-              fontSize: '10px',
-              fontFamily: "'Space Mono', monospace",
-              color: 'rgba(255,255,255,0.3)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              marginBottom: '0.75rem'
-            }}>
+          <div className="bg-[#0D1420] border border-[rgba(55,138,221,0.3)] rounded-2xl p-5 mb-6">
+            <div className="text-[10px] font-['Space_Mono'] text-white/30 tracking-[0.08em] uppercase mb-3">
               Recommendation
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '0.75rem' }}>
-              <div style={{
-                width: '44px',
-                height: '30px',
-                background: 'rgba(55,138,221,0.1)',
-                border: '0.5px solid rgba(55,138,221,0.2)',
-                borderRadius: '6px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '14px'
-              }}>💳</div>
-              <div>
-                <div style={{ fontSize: '16px', fontWeight: 500, color: '#fff' }}>{result.card}</div>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '2px' }}>{result.category}</div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-11 h-7.5 bg-[rgba(55,138,221,0.1)] border border-[rgba(55,138,221,0.2)] rounded-md flex items-center justify-center text-sm">
+                💳
               </div>
-              <div style={{
-                marginLeft: 'auto',
-                fontSize: '22px',
-                fontWeight: 600,
-                color: '#378ADD',
-                fontFamily: "'Space Mono', monospace"
-              }}>
+              <div>
+                <div className="text-[16px] font-medium text-white">{result.card}</div>
+                <div className="text-[11px] text-white/30 mt-0.5">{result.category}</div>
+              </div>
+              <div className="ml-auto text-[22px] font-semibold text-[#378ADD] font-['Space_Mono']">
                 {result.percentage}%
               </div>
             </div>
-            <div style={{
-              fontSize: '12px',
-              color: 'rgba(255,255,255,0.35)',
-              lineHeight: 1.5,
-              borderTop: '0.5px solid rgba(55,138,221,0.1)',
-              paddingTop: '0.75rem'
-            }}>
+            <div className="text-[12px] text-white/35 leading-relaxed border-t border-[rgba(55,138,221,0.1)] pt-3">
               {result.message}
             </div>
           </div>
         )}
 
+        {/* Cards */}
         {cards.length > 0 && (
           <>
-            <div style={{
-              fontSize: '10px',
-              fontFamily: "'Space Mono', monospace",
-              color: 'rgba(255,255,255,0.3)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              marginBottom: '0.75rem'
-            }}>
+            <div className="text-[10px] font-['Space_Mono'] text-white/30 tracking-[0.08em] uppercase mb-3">
               Your cards
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div className="grid grid-cols-2 gap-2">
               {cards.map((card) => (
-                <div key={card.id} style={{
-                  background: '#0D1420',
-                  border: '0.5px solid rgba(55,138,221,0.1)',
-                  borderRadius: '12px',
-                  padding: '12px'
-                }}>
-                  <div style={{ fontSize: '12px', fontWeight: 500, color: '#fff', marginBottom: '4px' }}>
-                    {card.name}
-                  </div>
+                <div key={card.id} className="bg-[#0D1420] border border-[rgba(55,138,221,0.1)] rounded-xl p-3">
+                  <div className="text-[12px] font-medium text-white mb-1">{card.name}</div>
                   {card.rewards?.map((reward) => (
                     <div key={reward.id}>
-                      <div style={{ fontSize: '10px', color: '#378ADD', fontFamily: "'Space Mono', monospace" }}>
+                      <div className="text-[10px] text-[#378ADD] font-['Space_Mono']">
                         {reward.reward_percentage}% · {reward.category}
                       </div>
                       {reward.is_rotating && (
-                        <div style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          background: 'rgba(55,138,221,0.1)',
-                          border: '0.5px solid rgba(55,138,221,0.2)',
-                          borderRadius: '100px',
-                          padding: '2px 7px',
-                          fontSize: '9px',
-                          color: '#378ADD',
-                          fontFamily: "'Space Mono', monospace",
-                          marginTop: '4px'
-                        }}>
+                        <div className="inline-flex items-center gap-1 bg-[rgba(55,138,221,0.1)] border border-[rgba(55,138,221,0.2)] rounded-full px-1.5 py-0.5 text-[9px] text-[#378ADD] font-['Space_Mono'] mt-1">
                           ⟳ rotating
                         </div>
                       )}

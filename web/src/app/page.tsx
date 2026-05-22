@@ -18,172 +18,48 @@ export default function Home() {
   }
 
   return (
-    <main style={{
-      minHeight: '100vh',
-      background: '#080C14',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem 1.5rem',
-      fontFamily: "'Sora', sans-serif",
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
-        }
-        .pm-btn:hover { background: #e8e8e8 !important; transform: translateY(-1px); }
-        .pm-btn:active { transform: translateY(0) !important; }
-      `}</style>
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-8 bg-[#080C14] relative overflow-hidden font-['Sora']">
+      
+      <div className="pm-grid fixed inset-0 pointer-events-none" />
+      
+      <div className="pm-glow absolute w-150 h-150 rounded-full -top-50 left-1/2 -translate-x-1/2 pointer-events-none" />
 
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundImage: 'linear-gradient(rgba(55,138,221,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(55,138,221,0.04) 1px, transparent 1px)',
-        backgroundSize: '40px 40px'
-      }} />
-
-      <div style={{
-        position: 'absolute',
-        width: '600px',
-        height: '600px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(55,138,221,0.08) 0%, transparent 70%)',
-        top: '-200px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        pointerEvents: 'none'
-      }} />
-
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: '400px',
-        background: '#0D1420',
-        border: '0.5px solid rgba(55,138,221,0.2)',
-        borderRadius: '20px',
-        padding: '2.5rem 2rem',
-        zIndex: 1
-      }}>
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
-          background: 'rgba(55,138,221,0.1)',
-          border: '0.5px solid rgba(55,138,221,0.3)',
-          borderRadius: '100px',
-          padding: '4px 12px',
-          fontSize: '11px',
-          fontFamily: "'Space Mono', monospace",
-          color: '#378ADD',
-          letterSpacing: '0.05em',
-          marginBottom: '1.5rem'
-        }}>
-          <div style={{
-            width: '6px',
-            height: '6px',
-            borderRadius: '50%',
-            background: '#378ADD',
-            animation: 'pulse 2s infinite'
-          }} />
+      <div className="relative w-full max-w-100 bg-[#0D1420] border border-[rgba(55,138,221,0.2)] rounded-[20px] p-10 z-10">
+        
+        <div className="inline-flex items-center gap-1.5 bg-[rgba(55,138,221,0.1)] border border-[rgba(55,138,221,0.3)] rounded-full px-3 py-1 text-[11px] font-['Space_Mono'] text-[#378ADD] tracking-wider mb-6">
+          <div className="pm-pulse w-1.5 h-1.5 rounded-full bg-[#378ADD]" />
           AI-powered
         </div>
 
-        <div style={{
-          fontSize: '32px',
-          fontWeight: 600,
-          color: '#ffffff',
-          letterSpacing: '-0.02em',
-          marginBottom: '0.5rem',
-          lineHeight: 1
-        }}>
-          Points<span style={{ color: '#378ADD' }}>Maxxing</span>
+        <div className="text-[32px] font-semibold text-white tracking-[-0.02em] mb-2 leading-none">
+          Points<span className="text-[#378ADD]">Maxxing</span>
         </div>
 
-        <div style={{
-          fontSize: '14px',
-          color: 'rgba(255,255,255,0.4)',
-          marginBottom: '2rem',
-          fontWeight: 300,
-          letterSpacing: '0.01em'
-        }}>
+        <div className="text-[14px] text-white/40 mb-8 font-light tracking-[0.01em]">
           Maximize every swipe.
         </div>
 
-        <div style={{
-          height: '0.5px',
-          background: 'rgba(55,138,221,0.15)',
-          marginBottom: '2rem'
-        }} />
+        <div className="h-px bg-[rgba(55,138,221,0.15)] mb-8" />
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '8px',
-          marginBottom: '2rem'
-        }}>
+        <div className="grid grid-cols-2 gap-2 mb-8">
           {[
             { num: '5%', label: 'max cashback found' },
             { num: '3', label: 'cards optimized' }
           ].map((stat) => (
-            <div key={stat.label} style={{
-              background: 'rgba(55,138,221,0.05)',
-              border: '0.5px solid rgba(55,138,221,0.1)',
-              borderRadius: '10px',
-              padding: '10px 12px'
-            }}>
-              <div style={{
-                fontSize: '18px',
-                fontWeight: 600,
-                color: '#378ADD',
-                fontFamily: "'Space Mono', monospace"
-              }}>{stat.num}</div>
-              <div style={{
-                fontSize: '10px',
-                color: 'rgba(255,255,255,0.3)',
-                marginTop: '2px',
-                letterSpacing: '0.03em'
-              }}>{stat.label}</div>
+            <div key={stat.label} className="bg-[rgba(55,138,221,0.05)] border border-[rgba(55,138,221,0.1)] rounded-[10px] p-3">
+              <div className="text-[18px] font-semibold text-[#378ADD] font-['Space_Mono']">{stat.num}</div>
+              <div className="text-[10px] text-white/30 mt-0.5 tracking-[0.03em]">{stat.label}</div>
             </div>
           ))}
         </div>
 
-        <div style={{
-          fontSize: '11px',
-          fontFamily: "'Space Mono', monospace",
-          color: 'rgba(255,255,255,0.3)',
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          marginBottom: '1rem'
-        }}>
+        <div className="text-[11px] font-['Space_Mono'] text-white/30 tracking-[0.08em] uppercase mb-4">
           Continue with
         </div>
 
         <button
-          className="pm-btn"
+          className="pm-btn w-full flex items-center justify-center gap-2.5 py-3.5 bg-white border-none rounded-xl text-[#080C14] font-['Sora'] text-[14px] font-medium cursor-pointer transition-all duration-200 tracking-[0.01em]"
           onClick={handleSignIn}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            padding: '14px',
-            background: '#ffffff',
-            border: 'none',
-            borderRadius: '12px',
-            color: '#080C14',
-            fontFamily: "'Sora', sans-serif",
-            fontSize: '14px',
-            fontWeight: 500,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            letterSpacing: '0.01em'
-          }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -194,13 +70,7 @@ export default function Home() {
           Sign in with Google
         </button>
 
-        <div style={{
-          marginTop: '1.5rem',
-          fontSize: '11px',
-          color: 'rgba(255,255,255,0.2)',
-          textAlign: 'center',
-          lineHeight: 1.6
-        }}>
+        <div className="mt-6 text-[11px] text-white/20 text-center leading-relaxed">
           By signing in you agree to our terms of service.<br />
           Your card data is stored securely and never shared.
         </div>

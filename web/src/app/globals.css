@@ -1,26 +1,30 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+.pm-grid {
+  background-image: 
+    linear-gradient(rgba(55, 138, 221, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(55, 138, 221, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.pm-glow {
+  background: radial-gradient(circle, rgba(55,138,221,0.08) 0%, transparent 70%);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.pm-pulse {
+  animation: pulse 2s infinite;
+}
+
+.pm-btn:hover {
+  background: #e8e8e8 !important;
+  transform: translateY(-1px);
+}
+
+.pm-btn:active {
+  transform: translateY(0) !important;
 }
