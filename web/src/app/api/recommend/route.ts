@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { Redis } from '@upstash/redis'
 import { Ratelimit } from '@upstash/ratelimit'
+import { formatCategory } from '@/app/utils/formatCategory'
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -83,10 +84,11 @@ export async function POST(request: Request) {
             status: 404 
         })
     }
-
+    
     return NextResponse.json({ 
-        message: `We are categorizing this purchase as ${category}. The best credit card to use would be ${data[0].credit_cards.name} which will give you ${data[0].reward_percentage}% back`,
+        message: `We are categorizing this purchase as "${formatCategory(category)}". The best credit card to use would be ${data[0].credit_cards.name} which will give you ${data[0].reward_percentage}% back`,
         card: data[0].credit_cards.name,
+        issuer: data[0].credit_cards.card_issuer,
         category: category,
         percentage: data[0].reward_percentage
     })

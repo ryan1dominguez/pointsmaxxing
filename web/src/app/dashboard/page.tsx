@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
+import CreditCard from '../components/CreditCard'
+import { formatCategory } from '../utils/formatCategory'
 
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,6 +30,7 @@ interface Card {
 interface Result {
   message: string
   card: string
+  issuer: string
   category: string
   percentage: number
 }
@@ -170,12 +173,10 @@ export default function Dashboard() {
               Recommendation
             </div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-11 h-7.5 bg-[rgba(55,138,221,0.1)] border border-[rgba(55,138,221,0.2)] rounded-md flex items-center justify-center text-sm">
-                💳
-              </div>
+              <CreditCard name={result.card} issuer={result.issuer} percentage={result.percentage} category={result.category}/>
               <div>
                 <div className="text-[16px] font-medium text-white">{result.card}</div>
-                <div className="text-[11px] text-white/30 mt-0.5">{result.category}</div>
+                <div className="text-[11px] text-white/30 mt-0.5">{formatCategory(result.category)}</div>
               </div>
               <div className="ml-auto text-[22px] font-semibold text-[#378ADD] font-['Space_Mono']">
                 {result.percentage}%
