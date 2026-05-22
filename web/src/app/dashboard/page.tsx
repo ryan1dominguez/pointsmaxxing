@@ -39,6 +39,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [cards, setCards] = useState<Card[]>([])
   const [userName, setUserName] = useState('')
+  const [avatarDropdown, setAvatarDropdown] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -94,6 +95,16 @@ export default function Dashboard() {
     if (e.key === 'Enter') handleRecommend()
   }
 
+  const handleSignOut = async() => {
+    await supabase.auth.signOut()
+    router.push('/')
+  }
+
+  const toggleAvatarDropdown = () => {
+    setAvatarDropdown(!avatarDropdown)
+  }
+  
+
   return (
     <main className="min-h-screen bg-[#080C14] font-['Sora'] relative overflow-hidden">
       <div className="pm-grid fixed inset-0 pointer-events-none" />
@@ -103,8 +114,25 @@ export default function Dashboard() {
         <div className="text-[18px] font-semibold text-white tracking-[-0.02em]">
           Points<span className="text-[#378ADD]">Maxx</span>
         </div>
-        <div className="w-8 h-8 rounded-full bg-[rgba(55,138,221,0.15)] border border-[rgba(55,138,221,0.3)] flex items-center justify-center text-[11px] font-semibold text-[#378ADD] font-['Space_Mono']">
-          {getInitials(userName)}
+
+        {/* Avatar + Dropdown wrapper */}
+        <div className="relative">
+          <button className="w-8 h-8 rounded-full bg-[rgba(55,138,221,0.15)] border border-[rgba(55,138,221,0.3)] flex items-center justify-center text-[11px] font-semibold text-[#378ADD] font-['Space_Mono'] hover:bg-[rgba(55,138,221,0.25)] transition-colors duration-150 cursor-pointer"
+            onClick={toggleAvatarDropdown}
+          >
+            {getInitials(userName)}
+          </button>
+
+          {avatarDropdown && (
+            <div className="absolute top-10 right-0 w-36 bg-[#0D1420] border border-[rgba(55,138,221,0.2)] rounded-xl shadow-lg z-50 p-1">
+              <button
+              onClick={handleSignOut}
+              className="pm-dropdown-item w-full text-left px-4 py-2 text-[13px] text-white/70 rounded-lg cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
