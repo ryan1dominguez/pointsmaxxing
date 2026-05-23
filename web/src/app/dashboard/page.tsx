@@ -127,6 +127,9 @@ export default function Dashboard() {
     setAvatarDropdown(!avatarDropdown)
   }
   
+  const handleManageCards = async() => {
+    router.push('/cards')
+  }
 
   return (
     <main className="min-h-screen bg-[#080C14] font-['Sora'] relative overflow-hidden">
@@ -149,8 +152,14 @@ export default function Dashboard() {
           {avatarDropdown && (
             <div className="absolute top-10 right-0 w-36 bg-[#0D1420] border border-[rgba(55,138,221,0.2)] rounded-xl shadow-lg z-100 p-1">
               <button
-              onClick={handleSignOut}
-              className="pm-dropdown-item w-full text-left px-4 py-2 text-[13px] text-white/70 rounded-lg cursor-pointer"
+                onClick={handleManageCards}
+                className="pm-dropdown-item w-full text-left px-4 py-2 text-[13px] text-white/70 rounded-lg cursor-pointer"
+              >
+                Manage Cards
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="pm-dropdown-item w-full text-left px-4 py-2 text-[13px] text-white/70 rounded-lg cursor-pointer"
               >
                 Sign Out
               </button>
