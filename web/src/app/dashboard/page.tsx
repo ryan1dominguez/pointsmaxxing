@@ -133,13 +133,13 @@ export default function Dashboard() {
       <div className="pm-grid fixed inset-0 pointer-events-none" />
 
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-[rgba(55,138,221,0.1)] relative z-10">
+      <div className="flex items-center justify-between px-6 py-5 border-b border-[rgba(55,138,221,0.1)] relative z-60">
         <div className="text-[18px] font-semibold text-white tracking-[-0.02em]">
           Points<span className="text-[#378ADD]">Maxxing</span>
         </div>
 
         {/* Avatar + Dropdown wrapper */}
-        <div className="relative">
+        <div className="relative z-50">
           <button className="w-8 h-8 rounded-full bg-[rgba(55,138,221,0.15)] border border-[rgba(55,138,221,0.3)] flex items-center justify-center text-[11px] font-semibold text-[#378ADD] font-['Space_Mono'] hover:bg-[rgba(55,138,221,0.25)] transition-colors duration-150 cursor-pointer"
             onClick={toggleAvatarDropdown}
           >
@@ -147,7 +147,7 @@ export default function Dashboard() {
           </button>
 
           {avatarDropdown && (
-            <div className="absolute top-10 right-0 w-36 bg-[#0D1420] border border-[rgba(55,138,221,0.2)] rounded-xl shadow-lg z-50 p-1">
+            <div className="absolute top-10 right-0 w-36 bg-[#0D1420] border border-[rgba(55,138,221,0.2)] rounded-xl shadow-lg z-100 p-1">
               <button
               onClick={handleSignOut}
               className="pm-dropdown-item w-full text-left px-4 py-2 text-[13px] text-white/70 rounded-lg cursor-pointer"
@@ -160,7 +160,7 @@ export default function Dashboard() {
       </div>
 
       {/* Body */}
-      <div className="px-6 py-8 relative z-10 max-w-120 mx-auto">
+      <div className="px-6 py-8 relative z-1 max-w-120 mx-auto">
         <div className="text-[13px] text-white/35 mb-1 font-['Space_Mono'] tracking-wider">
           // {getGreeting()}
         </div>
