@@ -45,17 +45,28 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { purchase_description } = body
 
-    const message = await anthropic.messages.create({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 10,
-        system: "You are a purchase categorizer. Given a purchase description, respond with exactly one category from this list: dining, groceries, gas, online_shopping, travel, home_improvement. No explanation, just the category word.",
-        messages: [{ 
-            role: "user", 
-            content: purchase_description 
-        }],
-    });
-    const category = (message.content[0] as { type: 'text', text: string}).text.trim()
+    if (!purchase_description || purchase_description.trim() === ''){
+        return NextResponse.json({ message: "Purchase description is required." }, { status: 400 })
+    }
 
+    let category = ''
+    try {
+        const message = await anthropic.messages.create({
+            model: "claude-haiku-4-5-20251001",
+            max_tokens: 10,
+            system: "You are a purchase categorizer. Given a purchase description, respond with exactly one category from this list: dining, groceries, gas, online_shopping, travel, home_improvement. No explanation, just the category word.",
+            messages: [{ 
+                role: "user", 
+                content: purchase_description 
+            }],
+        });
+        category = (message.content[0] as { type: 'text', text: string}).text.trim()
+    } catch (error: any) {
+        if (error.status === 529) {
+            return NextResponse.json({ message: "Service temporarily unavailable, please try again." }, { status: 503 })
+        }
+        return NextResponse.json({ message: "An unexpected error occurred." }, { status: 500 })
+    }
     const today = new Date().toISOString().split('T')[0]
 
     const { data, error } = await supabaseAdmin
@@ -69,7 +80,7 @@ export async function POST(request: Request) {
 
     if (error) {
         return NextResponse.json({ 
-            message: "An error occured"
+            message: "An error occurred"
         }, 
         { 
             status: 500 

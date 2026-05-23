@@ -87,8 +87,28 @@ export default function Dashboard() {
         body: JSON.stringify({ purchase_description: purchase })
       })
       const data = await response.json()
+
+      if (!response.ok) {
+        setResult({
+          message: data.message || 'Something went wrong, please try again',
+          card: '',
+          issuer: '',
+          category: '',
+          percentage: 0
+        })
+        setLoading(false)
+        return
+      }
+
       setResult(data)
     } catch (err) {
+      setResult({
+        message: 'Network error, please check your connection',
+        card: '',
+        issuer: '',
+          category: '',
+          percentage: 0
+      })
       console.error(err)
     }
     setLoading(false)
@@ -173,7 +193,9 @@ export default function Dashboard() {
               Recommendation
             </div>
             <div className="flex items-center gap-3 mb-3">
-              <CreditCard name={result.card} issuer={result.issuer} percentage={result.percentage} category={result.category}/>
+              {result.card && (
+                <CreditCard name={result.card} issuer={result.issuer} percentage={result.percentage} category={result.category}/>
+              )}
               <div>
                 <div className="text-[16px] font-medium text-white">{result.card}</div>
                 <div className="text-[11px] text-white/30 mt-0.5">{formatCategory(result.category)}</div>
