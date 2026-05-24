@@ -45,8 +45,7 @@ export default function Dashboard() {
   const [avatarDropdown, setAvatarDropdown] = useState(false)
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
         router.push('/')
         return
@@ -54,8 +53,9 @@ export default function Dashboard() {
       const name = session.user.user_metadata?.full_name || 'User'
       setUserName(name)
       fetchCards()
-    }
-    checkAuth()
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   const fetchCards = async () => {
@@ -122,15 +122,7 @@ export default function Dashboard() {
     await supabase.auth.signOut()
     router.push('/')
   }
-
-  const toggleAvatarDropdown = () => {
-    setAvatarDropdown(!avatarDropdown)
-  }
   
-  const handleManageCards = async() => {
-    router.push('/cards')
-  }
-
   return (
     <main className="min-h-screen bg-[#080C14] font-['Sora'] relative overflow-hidden">
       <div className="pm-grid fixed inset-0 pointer-events-none" />
@@ -144,7 +136,7 @@ export default function Dashboard() {
         {/* Avatar + Dropdown wrapper */}
         <div className="relative z-50">
           <button className="w-8 h-8 rounded-full bg-[rgba(55,138,221,0.15)] border border-[rgba(55,138,221,0.3)] flex items-center justify-center text-[11px] font-semibold text-[#378ADD] font-['Space_Mono'] hover:bg-[rgba(55,138,221,0.25)] transition-colors duration-150 cursor-pointer"
-            onClick={toggleAvatarDropdown}
+            onClick={() => setAvatarDropdown(!avatarDropdown)}
           >
             {getInitials(userName)}
           </button>
@@ -152,7 +144,7 @@ export default function Dashboard() {
           {avatarDropdown && (
             <div className="absolute top-10 right-0 w-36 bg-[#0D1420] border border-[rgba(55,138,221,0.2)] rounded-xl shadow-lg z-100 p-1">
               <button
-                onClick={handleManageCards}
+                onClick={() => router.push('/cards')}
                 className="pm-dropdown-item w-full text-left px-4 py-2 text-[13px] text-white/70 rounded-lg cursor-pointer"
               >
                 Manage Cards
