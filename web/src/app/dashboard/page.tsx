@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 import CreditCard from '../components/CreditCard'
@@ -37,6 +37,7 @@ interface Result {
 
 export default function Dashboard() {
   const router = useRouter()
+  const dropdownRef = useRef<HTMLDivElement>(null)
   const [purchase, setPurchase] = useState('')
   const [result, setResult] = useState<Result | null>(null)
   const [loading, setLoading] = useState(false)
@@ -56,6 +57,20 @@ export default function Dashboard() {
     })
 
     return () => subscription.unsubscribe()
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setAvatarDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
   }, [])
 
   const fetchCards = async () => {
@@ -134,7 +149,7 @@ export default function Dashboard() {
         </div>
 
         {/* Avatar + Dropdown wrapper */}
-        <div className="relative z-50">
+        <div className="relative z-50" ref={dropdownRef}>
           <button className="w-8 h-8 rounded-full bg-[rgba(55,138,221,0.15)] border border-[rgba(55,138,221,0.3)] flex items-center justify-center text-[11px] font-semibold text-[#378ADD] font-['Space_Mono'] hover:bg-[rgba(55,138,221,0.25)] transition-colors duration-150 cursor-pointer"
             onClick={() => setAvatarDropdown(!avatarDropdown)}
           >
