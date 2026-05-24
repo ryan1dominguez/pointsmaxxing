@@ -1,13 +1,8 @@
 "use client"
 
-import { createBrowserClient } from '@supabase/ssr'
+import { supabase } from '@/lib/supabase'
 
 export default function Home() {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-  )
-
   const handleSignIn = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
