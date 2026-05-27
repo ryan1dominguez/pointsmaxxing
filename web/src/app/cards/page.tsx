@@ -1,12 +1,22 @@
-import { useState } from "react"
-import { supabase } from "@/lib/supabase"
+"use client"
 
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabase"
+import { CARD_ISSUERS } from "../constants/cardIssuers"
+import { REWARD_CATEGORIES } from "../constants/rewardCategories"
 interface Reward {
   category: string
   reward_percentage: number
   is_rotating: boolean
   start_date: string | null
   end_date: string | null
+}
+
+interface Card {
+  id: string
+  name: string
+  card_issuer: string
+  rewards: Reward[]
 }
 
 export default function Cards() {
@@ -18,7 +28,7 @@ export default function Cards() {
     ])
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
-    //const [cards, setCards] = useState<Card[]>([])
+    const [cards, setCards] = useState<Card[]>([])
     const [showForm, setShowForm] = useState(false)
 
     const handleSubmit = async() => {
@@ -80,17 +90,68 @@ export default function Cards() {
 
     }
 
-    const fetchCards = () => {
-
+    const fetchCards = async () => {
+        const { data } = await supabase
+        .from('credit_cards')
+        .select('*, rewards(*)')
+        if (data) setCards(data)
     }
 
     const handleDelete = () => {
 
     }
 
-    
+    useEffect(() => {
+        fetchCards()
+    }, [])
 
     return (
-        <h1>Cards Page</h1>
+        <main>
+            <div>
+                <button onClick={() => setShowForm(true)}>Add Card</button>
+                {cards.length > 0 ? (       
+                    cards.map((card) => (
+                        <div key={card.id}>
+                            <div>{card.name}</div>
+                            <button>Delete</button>
+                        </div>
+                    ))
+                ) : (
+                    <div>No cards yet. Add your first card to get started.</div>
+                )}
+
+                {showForm && (
+                    <div>
+                        
+                        <input
+                            placeholder="Card Name"
+                            value={cardName}
+                            onChange={(e) => setCardName(e.target.value)}
+                        />
+
+                        <select
+                            value={cardIssuer}
+                            onChange={(e) => setCardIssuer(e.target.value)}
+                        >
+                            <option value="">Select card issuer</option> 
+                            {CARD_ISSUERS.map((issuer) => (
+                                <option key={issuer} value={issuer}>{issuer}</option>
+                            ))}
+                        </select>
+                        
+                        <input
+                            placeholder="Last Four Digits"
+                            value={lastFourDigits}
+                            onChange={(e) => setLastFourDigits(e.target.value)}
+                        />
+                        
+                        <button onClick={() => setShowForm(false)}>Close</button>
+
+                    </div>
+                )}
+            </div>
+
+
+        </main>
     )
 }
