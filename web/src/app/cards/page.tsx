@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
-import { CARD_ISSUERS } from "../constants/cardIssuers"
-import { REWARD_CATEGORIES } from "../constants/rewardCategories"
+import { PREDEFINED_CARDS, PredefinedCard } from "../constants/cards"
+
 interface Reward {
   category: string
   reward_percentage: number
@@ -16,29 +17,28 @@ interface Card {
   id: string
   name: string
   card_issuer: string
+  last_four_digits: string
   rewards: Reward[]
 }
 
 export default function Cards() {
-    const [cardName, setCardName] = useState('')
-    const [cardIssuer, setCardIssuer] = useState('')
-    const [lastFourDigits, setLastFourDigits] = useState('')
-    const [rewards, setRewards] = useState<Reward[]>([
-        { category: '', reward_percentage: 0, is_rotating: false, start_date: null, end_date: null}
-    ])
-    const [error, setError] = useState('')
-    const [success, setSuccess] = useState('')
+    const router = useRouter()
     const [cards, setCards] = useState<Card[]>([])
     const [showForm, setShowForm] = useState(false)
+    const [selectedCard, setSelectedCard] = useState<PredefinedCard | null>(null)
+    const [lastFourDigits, setLastFourDigits] = useState('')
+    const [error, setError] = useState('')
+    const [success, setSuccess] = useState('')
+    
 
     const handleSubmit = async() => {
-        if (!cardName || !cardIssuer || !lastFourDigits) {
+        if (!selectedCard|| !lastFourDigits) {
             setError('Please fill in all required fields')
             return
         }
 
-        const trimmedCardName = cardName.trim()
         const trimmedLastFour = lastFourDigits.trim()
+
         const { data: { session } } = await supabase.auth.getSession()
         const userId = session?.user.id
 
@@ -46,8 +46,8 @@ export default function Cards() {
             .from('credit_cards')
             .insert({ 
                 user_id: userId,
-                name: trimmedCardName, 
-                card_issuer: cardIssuer,
+                name: selectedCard.name, 
+                card_issuer: selectedCard.issuer,
                 last_four_digits: trimmedLastFour 
             })
             .select()
@@ -58,17 +58,17 @@ export default function Cards() {
             return
         }
 
-        if (cardData) {
+        if (cardData && selectedCard.rewards.length > 0) {
             const { error: rewardsError } = await supabase
             .from('rewards')
             .insert(
-                rewards.map(reward => ({
+                selectedCard.rewards.map(reward => ({
                     credit_card_id: cardData.id,
                     category: reward.category,
                     reward_percentage: reward.reward_percentage,
                     is_rotating: reward.is_rotating,
-                    start_date: reward.start_date,
-                    end_date: reward.end_date
+                    start_date: null,
+                    end_date: null
                 }))
             )
             if (rewardsError) {
@@ -76,16 +76,14 @@ export default function Cards() {
                 return
             }
 
-            if (!rewardsError) {
-                setCardName('')
-                setCardIssuer('')
-                setLastFourDigits('')
-                setRewards([{ category: '', reward_percentage: 0, is_rotating: false, start_date: null, end_date: null }])
-                setError('')
-                setSuccess('Card added successfully!')
-                setShowForm(false)
-                fetchCards()
-            }
+           
+        setSelectedCard(null)
+        setLastFourDigits('')
+        setError('')
+        setSuccess('Card added successfully!')
+        setShowForm(false)
+        fetchCards()
+            
         }
 
     }
@@ -97,8 +95,13 @@ export default function Cards() {
         if (data) setCards(data)
     }
 
-    const handleDelete = () => {
-
+    const handleDelete = async (cardId: string) => {
+        const { error } = await supabase
+            .from('credit_cards')
+            .delete()
+            .eq('id', cardId)
+        
+            if (!error) fetchCards()
     }
 
     useEffect(() => {
@@ -108,12 +111,27 @@ export default function Cards() {
     return (
         <main>
             <div>
+                <button onClick={() => router.push('/dashboard')}>← Back</button>
+                <h1>Manage Cards</h1>
                 <button onClick={() => setShowForm(true)}>Add Card</button>
+            </div>
+
+            {success && <p>{success}</p>}
+
                 {cards.length > 0 ? (       
                     cards.map((card) => (
                         <div key={card.id}>
                             <div>{card.name}</div>
-                            <button>Delete</button>
+                            <div>{card.card_issuer}</div>
+                            <div>•••• {card.last_four_digits}</div>
+                            <div>
+                                {card.rewards?.map((reward, i) => (
+                                    <div key={i}>
+                                    {reward.reward_percentage}% · {reward.category}
+                                    </div>
+                                ))}
+                            </div>
+                            <button onClick={() => handleDelete(card.id)}>Delete</button>
                         </div>
                     ))
                 ) : (
@@ -122,36 +140,34 @@ export default function Cards() {
 
                 {showForm && (
                     <div>
-                        
-                        <input
-                            placeholder="Card Name"
-                            value={cardName}
-                            onChange={(e) => setCardName(e.target.value)}
-                        />
+                        <button onClick={() => setShowForm(false)}>Close</button>
+                        <h2>Add a Card</h2>
+
+                        {error && <p>{error}</p>}
 
                         <select
-                            value={cardIssuer}
-                            onChange={(e) => setCardIssuer(e.target.value)}
+                            value={selectedCard?.name || ''}
+                            onChange={(e) => {
+                                const card = PREDEFINED_CARDS.find(c => c.name === e.target.value)
+                                setSelectedCard(card || null)
+                            }}
                         >
-                            <option value="">Select card issuer</option> 
-                            {CARD_ISSUERS.map((issuer) => (
-                                <option key={issuer} value={issuer}>{issuer}</option>
+                            <option value="">Select your card</option>
+                            {PREDEFINED_CARDS.map(card => (
+                                <option key={card.name} value={card.name}>{card.name}</option>
                             ))}
                         </select>
-                        
+
                         <input
                             placeholder="Last Four Digits"
                             value={lastFourDigits}
+                            maxLength={4}
                             onChange={(e) => setLastFourDigits(e.target.value)}
                         />
-                        
-                        <button onClick={() => setShowForm(false)}>Close</button>
-
+                       
+                        <button onClick={handleSubmit}>Add Card</button>
                     </div>
                 )}
-            </div>
-
-
         </main>
     )
 }
