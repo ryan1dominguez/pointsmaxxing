@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { Redis } from '@upstash/redis'
 import { Ratelimit } from '@upstash/ratelimit'
 import { formatCategory } from '@/app/utils/formatCategory'
+import { PREDEFINED_CARDS } from '@/app/constants/cards'
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,6 +25,10 @@ const ratelimit = new Ratelimit({
     limiter: Ratelimit.slidingWindow(10, '1 m'),
     analytics: true,
 })
+
+const categories = [...new Set(
+    PREDEFINED_CARDS.flatMap(card => card.rewards.map(reward => reward.category))
+)]
 
 export async function POST(request: Request) {
     const ip = request.headers.get('x-forwarded-for') ?? 'anonymous'
@@ -54,7 +59,7 @@ export async function POST(request: Request) {
         const message = await anthropic.messages.create({
             model: "claude-haiku-4-5-20251001",
             max_tokens: 10,
-            system: "You are a purchase categorizer. Given a purchase description, respond with exactly one category from this list: dining, groceries, gas, online_shopping, travel, home_improvement. No explanation, just the category word.",
+            system: `You are a purchase categorizer. Given a purchase description, respond with exactly one category from this list: ${categories}. No explanation, just the category word.`,
             messages: [{ 
                 role: "user", 
                 content: purchase_description 
