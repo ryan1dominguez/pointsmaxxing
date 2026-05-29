@@ -59,7 +59,25 @@ export async function POST(request: Request) {
         const message = await anthropic.messages.create({
             model: "claude-haiku-4-5-20251001",
             max_tokens: 10,
-            system: `You are a purchase categorizer. Given a purchase description, respond with exactly one category from this list: ${categories}. No explanation, just the category word.`,
+            system: `You are a purchase categorizer. Given a purchase description, respond with exactly one category from this list: ${categories}.
+
+            Guidelines for categorization:
+            - amazon: purchases specifically at Amazon
+            - walmart: purchases specifically at Walmart
+            - target: purchases specifically at Target
+            - online_shopping: any other online retail not listed above (eBay, Etsy, Shopify stores, etc.)
+            - flights: airlines and flight bookings (United, Delta, American Airlines, Southwest, etc.)
+            - hotels: hotel stays and bookings (Marriott, Hilton, Hyatt, Airbnb, VRBO, etc.)
+            - travel: general travel not covered by flights or hotels (Expedia, car rentals, cruises, travel agencies, etc.)
+            - dining: restaurants, cafes, bars, food delivery (DoorDash, Uber Eats, Grubhub, etc.)
+            - groceries: supermarkets and grocery stores (Whole Foods, Trader Joe's, Kroger, Safeway, etc.)
+            - gas: gas stations and fuel (Chevron, Shell, BP, Exxon, etc.)
+            - home_improvement: home improvement stores and services (Home Depot, Lowe's, etc.)
+            - streaming: Netflix, Spotify, Hulu, Disney+, AppleTV+, etc.
+            - transit: taxis, rideshare (Uber, Lyft), parking, tolls, trains, buses, etc.
+            - drugstore: pharmacies and drugstores (CVS, Walgreens, Rite Aid, etc.)
+
+            Only respond with a category from the provided list. No explanation, just the category word.`,
             messages: [{ 
                 role: "user", 
                 content: purchase_description 

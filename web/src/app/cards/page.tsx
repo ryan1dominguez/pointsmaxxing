@@ -67,8 +67,8 @@ export default function Cards() {
                     category: reward.category,
                     reward_percentage: reward.reward_percentage,
                     is_rotating: reward.is_rotating,
-                    start_date: null,
-                    end_date: null
+                    start_date: reward.start_date,
+                    end_date: reward.end_date
                 }))
             )
             if (rewardsError) {
