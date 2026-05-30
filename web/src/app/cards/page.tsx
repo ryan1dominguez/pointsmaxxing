@@ -29,6 +29,7 @@ export default function Cards() {
     const [lastFourDigits, setLastFourDigits] = useState('')
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
+    const [loading, setLoading] = useState(true)
     
 
     const handleSubmit = async() => {
@@ -111,8 +112,19 @@ export default function Cards() {
     }
 
     useEffect(() => {
+      const checkAuth = async() => {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) {
+          router.push('/')
+          return
+        }
         fetchCards()
+        setLoading(false)
+      }
+      checkAuth()
     }, [])
+
+    if (loading) return <main className="min-h-screen bg-[#080C14]" />
 
     return (
     <main className="min-h-screen bg-[#080C14] font-['Sora'] relative overflow-hidden">
