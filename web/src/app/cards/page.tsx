@@ -29,7 +29,8 @@ export default function Cards() {
     const [lastFourDigits, setLastFourDigits] = useState('')
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
-    const [loading, setLoading] = useState(true)
+    const [authLoading, setAuthLoading] = useState(true)
+    const [cardsLoading, setCardsLoading] = useState(false)
     
 
     const handleSubmit = async() => {
@@ -60,23 +61,23 @@ export default function Cards() {
         }
 
         if (cardData && selectedCard.rewards.length > 0) {
-            const { error: rewardsError } = await supabase
-            .from('rewards')
-            .insert(
-                selectedCard.rewards.map(reward => ({
-                    credit_card_id: cardData.id,
-                    category: reward.category,
-                    reward_percentage: reward.reward_percentage,
-                    is_rotating: reward.is_rotating,
-                    start_date: reward.start_date,
-                    end_date: reward.end_date
-                }))
-            )
-            if (rewardsError) {
-                setError('Card was saved but rewards failed to save.')
-                return
-            }
-
+          const { error: rewardsError } = await supabase
+          .from('rewards')
+          .insert(
+              selectedCard.rewards.map(reward => ({
+                  credit_card_id: cardData.id,
+                  category: reward.category,
+                  reward_percentage: reward.reward_percentage,
+                  is_rotating: reward.is_rotating,
+                  start_date: reward.start_date,
+                  end_date: reward.end_date
+              }))
+          )
+          if (rewardsError) {
+              setError('Card was saved but rewards failed to save.')
+              return
+          }
+        }
            
         setSelectedCard(null)
         setLastFourDigits('')
@@ -86,18 +87,21 @@ export default function Cards() {
         setShowForm(false)
         fetchCards()
             
-        }
+        
 
     }
 
     const fetchCards = async () => {
-        const { data } = await supabase
+      setCardsLoading(true)
+      const { data } = await supabase
         .from('credit_cards')
         .select('*, rewards(*)')
-        if (data) setCards(data)
+      if (data) setCards(data)
+      setCardsLoading(false)  
     }
 
     const handleDelete = async (cardId: string) => {
+      setCardsLoading(true)
         const { error } = await supabase
             .from('credit_cards')
             .delete()
@@ -119,12 +123,12 @@ export default function Cards() {
           return
         }
         fetchCards()
-        setLoading(false)
+        setAuthLoading(false)
       }
       checkAuth()
     }, [])
 
-    if (loading) return <main className="min-h-screen bg-[#080C14]" />
+    if (authLoading) return <main className="min-h-screen bg-[#080C14]" />
 
     return (
     <main className="min-h-screen bg-[#080C14] font-['Sora'] relative overflow-hidden">
@@ -166,7 +170,11 @@ export default function Cards() {
         </div>
 
         {/* Cards list */}
-        {cards.length > 0 ? (
+        {cardsLoading ? (
+          <div className="text-center py-12 text-[13px] text-white/20 font-['Space_Mono']">
+            Loading cards...
+          </div>
+        ) : cards.length > 0 ? (
           cards.map((card) => (
             <div key={card.id} className="bg-[#0D1420] border border-[rgba(55,138,221,0.15)] rounded-2xl p-5 mb-2.5">
               <div className="flex items-start justify-between mb-3">
